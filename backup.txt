@@ -1,0 +1,96 @@
+relatorio.sql
+##  cria a base de dados, as tabelas e executa a VIEW
+
+CREATE DATABASE LOJA;
+
+USE LOJA;
+
+CREATE TABLE Estado (
+	estadoID INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(50) NOT NULL,
+    UF CHAR(2) NOT NULL
+);
+
+CREATE TABLE Municipio (
+	municipioID INT PRIMARY KEY AUTO_INCREMENT,
+    estadoID INT,
+    Nome VARCHAR(80) NOT NULL,
+    CodIBGE INT NOT NULL,
+    FOREIGN KEY (estadoID) REFERENCES Estado(estadoID)
+);
+
+CREATE TABLE Cliente (
+	clienteID INT PRIMARY KEY AUTO_INCREMENT,
+    municipioID INT,
+    Nome VARCHAR(80) NOT NULL,
+    CPF CHAR(11) NOT NULL,
+    Celular CHAR(11),
+    EndLogradouro VARCHAR(100) NOT NULL,
+    EndNumero VARCHAR(10) NOT NULL,
+    EndMunicipio INT NOT NULL,
+    EndCep CHAR(8),
+    FOREIGN KEY (municipioID) REFERENCES Municipio(municipioID)
+);
+
+CREATE TABLE ContaReceber (
+	contaID INT PRIMARY KEY AUTO_INCREMENT,
+    clienteID INT,
+    FaturaVenda INT,
+    DataConta DATE NOT NULL,
+    DataVencimento DATE NOT NULL,
+    Valor DECIMAL(18,2) NOT NULL,
+    Situacao ENUM('1', '2', '3') NOT NULL,
+    FOREIGN KEY (clienteID) REFERENCES Cliente(clienteID)
+);
+
+SELECT * FROM ContasNPagas;
+
+
+
+
+inserir.sql
+##  inseri valores exemplos para as tabelas
+
+USE LOJA;
+
+INSERT INTO Estado (Nome, UF)
+VALUES ('Paraná', 'PR'), ('São Paulo', 'SP'), ('Minas Gerais', 'MG');
+
+INSERT INTO Municipio (Nome, CodIBGE)
+VALUES ('Curitiba', 4106902), ('Guarulhos', 3518800), ('Uberlândia', 3170206);
+
+INSERT INTO Cliente (Nome, CPF, Celular, EndLogradouro, EndNumero, EndMunicipio, EndCep)
+VALUES ('Wellignton Souza', 71871085918, 41933645482, 'Rua Benjamin Valente', 12, 41, 82400140), 
+('Vinicius Costa', 24715945819, 18934358758, 'Viela Côcos', 25, 35, 07273061), 
+('Leticia Victoria', 68827857672, 31932596436, 'Rua dos Acantos', 1469, 31, 38412194);
+
+INSERT INTO ContaReceber (FaturaVenda, DataConta, DataVencimento, Valor, Situacao)
+VALUES (1001, '2024-01-01', '2024-02-01', 465.00, 1),
+(1002, '2023-06-02', '2023-07-02', 652.00, 3),
+(1003, '2019-04-23', '2019-05-23', 1056.00, 2);
+
+
+
+
+
+consulta.sql
+##  cria uma VIEW para mostrar quais clientes estão na situação 1 (Conta não paga)
+
+USE LOJA;
+
+CREATE VIEW ContasNPagas AS
+SELECT
+	c.contaID AS 'ID da Conta',
+    c1.Nome AS 'Nome do(a) Cliente',
+    c1.CPF AS 'CPF do(a) Cliente',
+    c.DataVencimento AS 'Data de Vencimento',
+    c.Valor AS 'Valor'
+FROM
+	ContaReceber c
+JOIN
+	Cliente c1 ON c.clienteID = c1.clienteID
+WHERE
+	c.Situacao = '1';
+
+
+
