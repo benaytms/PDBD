@@ -1,6 +1,6 @@
 ### ***Banco de dados de Loja***
 
-**O objetivo desse trabalho foi simular o sistema de banco de dados de uma loja ficticia**
+**O objetivo desse trabalho foi simular o sistema de banco de dados de uma loja ficticia**  
 relatorio.sql  
 Primeiro é criado o banco de dados, depois as tabelas com todos os atributos necessários  
 
